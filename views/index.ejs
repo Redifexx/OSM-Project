@@ -19,8 +19,14 @@
       #esri-map-container {
         padding: 0px;
         margin: 0px;
-        height: 50%;
-        width: 50%;
+        height: 90%;
+        width: 90%;
+      }
+
+      .esriSimpleMarkerSymbol path {
+        fill: rgb(0, 255, 255);
+        stroke: #000000;
+        stroke-width: 0.5px;
       }
     </style>
     <script src="https://js.arcgis.com/3.43/"></script>
@@ -28,16 +34,39 @@
       require([
         "esri/map",
         "esri/layers/OpenStreetMapLayer",
-        "dojo/domReady!",
-      ], function (Map, OpenStreetMapLayer) {
+        "esri/geometry/Point",
+        "esri/symbols/SimpleMarkerSymbol",
+        "esri/graphic",
+        "dojo/domReady!"
+      ], function(Map, OpenStreetMapLayer, Point, SimpleMarkerSymbol, Graphic) {
         var map, openStreetMapLayer;
 
         map = new Map("esri-map-container", {
-          center: [-89.924, 30.036],
+          center: [-82.3522,29.6424],
           zoom: 12,
         });
         openStreetMapLayer = new OpenStreetMapLayer();
         map.addLayer(openStreetMapLayer);
+
+        // Create a symbol for the marker
+        var markerSymbol = new SimpleMarkerSymbol();
+        markerSymbol.setColor("#FF0000"); // Red
+
+        // Create a graphic object to hold the marker
+        var graphic = new Graphic();
+
+        // Add an event listener to the map for user clicks
+        map.on("click", function(evt) {
+          // Set the graphic's geometry to the clicked point
+          graphic.setGeometry(new Point(evt.mapPoint));
+          
+          // Set the graphic's symbol to the marker symbol
+          graphic.setSymbol(markerSymbol);
+          
+          // Add the graphic to the map
+          map.graphics.add(graphic);
+        });
+        // Add any other code you want to run when the page loads here
       });
     </script>
   </head>
@@ -61,6 +90,30 @@
         .catch((error) => {
           console.error(error);
         });
+
+      var query1 = 10;
+      fetch("/total", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ query: query1 }), //From HTML to JS
+      })
+        .then((response) => {
+          if (response.ok) {
+            console.log("Query sent to server");
+            return response.text();
+          } else {
+            console.error("Error sending query to server");
+          }
+        })
+        .then((toSend) => {
+          //From JS to HTML
+          tupleTotal_.innerHTML = tupleTotal;
+        })
+        .catch((error) =>
+          console.error("Error sending query to server", error)
+        );
     </script>
     <div id="esri-map-container"></div>
   </body>

@@ -30,6 +30,14 @@ app.get('/', (req, res) => {
     res.render('index'); //Renders EJS 
 });
 
+var toSend = 'send';
+app.post('/test', (req, res) => {
+    var test = req.body.query; //HTML to JS
+    res.send(toSend) //JS TO HTML
+});
+
+
+
 app.use(express.static('public'));
 app.use('/', router);
 app.listen(PORT);

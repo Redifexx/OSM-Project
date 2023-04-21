@@ -52,15 +52,37 @@
         },
       })
         .then((response) => response.text())
-        .then((xmlString) => {
-          const options = { ignoreComment: true, alwaysChildren: true };
-          const result = xmljs.xml2js(xmlString, options);
+        .then((result) => {
           console.log(result);
           curData_.innerHTML = JSON.stringify(result);
         })
         .catch((error) => {
           console.error(error);
         });
+
+      var query1 = 10;
+      fetch("/total", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ query: query1 }), //From HTML to JS
+      })
+        .then((response) => {
+          if (response.ok) {
+            console.log("Query sent to server");
+            return response.text();
+          } else {
+            console.error("Error sending query to server");
+          }
+        })
+        .then((toSend) => {
+          //From JS to HTML
+          tupleTotal_.innerHTML = tupleTotal;
+        })
+        .catch((error) =>
+          console.error("Error sending query to server", error)
+        );
     </script>
     <div id="esri-map-container"></div>
   </body>

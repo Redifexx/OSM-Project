@@ -1,6 +1,7 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import xmljs from 'xml-js';
+import { hello } from './test.js';
 
 var PORT = process.env.PORT || 3000;
 
@@ -29,6 +30,14 @@ app.get('/', (req, res) => {
     console.log("REFRESHED!");
     res.render('index'); //Renders EJS 
 });
+
+var toSend = 'send';
+app.post('/test', (req, res) => {
+    var test = req.body.query; //HTML to JS
+    res.send(toSend) //JS TO HTML
+});
+
+console.log(hello);
 
 app.use(express.static('public'));
 app.use('/', router);

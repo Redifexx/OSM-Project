@@ -1,0 +1,46 @@
+<!doctype html>
+<html>
+    <head>
+        <title>
+            OSM TEST
+        </title>
+        <script>
+            (g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await (a=m.createElement("script"));e.set("libraries",[...r]+"");for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);e.set("callback",c+".maps."+q);a.src=`https://maps.${c}apis.com/maps/api/js?`+e;d[q]=f;a.onerror=()=>h=n(Error(p+" could not load."));a.nonce=m.querySelector("script[nonce]")?.nonce||"";m.head.append(a)}));d[l]?console.warn(p+" only loads once. Ignoring:",g):d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n))})({
+              key: "AIzaSyAEles6mM6dYCCUw4rB84pysVO6Q0qDZMY",
+              // Add other bootstrap parameters as needed, using camel case.
+              // Use the 'v' parameter to indicate the version to load (alpha, beta, weekly, etc.)
+            });
+          </script>
+    </head>
+
+    <body>
+        <header>
+            <h1>
+                DSA PROJECT 3
+            </h1>
+        </header>
+        <div tabindex="800" id="map"></div>
+        <script>
+            //Google maps API initialisation
+            var element = document.getElementById("map");
+
+            var map = new google.maps.Map(element, {
+            center: new google.maps.LatLng(45, 10),
+            zoom: 4,
+            mapTypeId: "OSM",
+            mapTypeControl: false,
+            streetViewControl: false
+            });
+
+            //Define OSM map type pointing at the OpenStreetMap tile server
+            map.mapTypes.set("OSM", new google.maps.ImageMapType({
+            getTileUrl: function(coord, zoom) {
+                return "https://tile.openstreetmap.org/" + zoom + "/" + coord.x + "/" + coord.y + ".png";
+            },
+            tileSize: new google.maps.Size(256, 256),
+            name: "OpenStreetMap",
+            maxZoom: 18
+            }));
+        </script>
+    </body>
+</html>

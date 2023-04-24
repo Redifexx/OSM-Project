@@ -1,6 +1,5 @@
 import express from 'express';
 import bodyParser from 'body-parser';
-import xmljs from 'xml-js';
 import { hello } from './test.js';
 
 var PORT = process.env.PORT || 3000;

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <h1>Yo</h1>
+    <h1 id="header">University of Florida</h1>
     <h2 id="curData"></h2>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta
@@ -13,16 +13,7 @@
       rel="stylesheet"
       href="https://js.arcgis.com/3.43/esri/css/esri.css"
     />
-    <style>
-      html,
-      body,
-      #esri-map-container {
-        padding: 0px;
-        margin: 0px;
-        height: 50%;
-        width: 50%;
-      }
-    </style>
+    <link rel="stylesheet" type="text/css" href="style.css" />
     <script src="https://js.arcgis.com/3.43/"></script>
     <script>
       require([
@@ -33,7 +24,7 @@
         var map, openStreetMapLayer;
 
         map = new Map("esri-map-container", {
-          center: [-89.924, 30.036],
+          center: [-82.3477896, 29.6464527],
           zoom: 12,
         });
         openStreetMapLayer = new OpenStreetMapLayer();
@@ -45,6 +36,9 @@
   <body>
     <script>
       curData_ = document.getElementById("curData");
+      var data;
+      var parser = new DOMParser();
+      var xmlDoc;
       fetch("https://api.openstreetmap.org/api/0.6/node/8013981115", {
         headers: {
           Accept: "application/xml",
@@ -53,36 +47,38 @@
       })
         .then((response) => response.text())
         .then((result) => {
-          console.log(result);
-          curData_.innerHTML = JSON.stringify(result);
+          //console.log(result);
+          xmlDoc = parser.parseFromString(result, "text/xml");
+          const curNode = xmlDoc.getElementsByTagName("node")[0];
+          const curLat = curNode.getAttribute("lat");
+          console.log(curLat);
+          const curLon = curNode.getAttribute("lon");
+          console.log(curLon);
+          const curTags = curNode.getElementsByTagName("tag");
+          const curCity = curTags[0].getAttribute("v");
+          console.log(curCity);
+          const curHouseNum = curTags[1].getAttribute("v");
+          console.log(curHouseNum);
+          const curPostCode = curTags[2].getAttribute("v");
+          console.log(curPostCode);
+          const curState = curTags[3].getAttribute("v");
+          console.log(curState);
+          const curStreet = curTags[4].getAttribute("v");
+          console.log(curStreet);
+          const curName = curTags[5].getAttribute("v");
+          console.log(curName);
+          const curPhone = curTags[6].getAttribute("v");
+          console.log(curPhone);
+          const curShop = curTags[7].getAttribute("v");
+          console.log(curShop);
+          console.log(xmlDoc.getElementsByTagName("node")[0]);
+          curData_.innerHTML = JSON.stringify(typeof result);
         })
         .catch((error) => {
           console.error(error);
         });
+        console.log(xmlDoc.getElementsByTagName("node")[0]);
 
-      var query1 = 10;
-      fetch("/total", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ query: query1 }), //From HTML to JS
-      })
-        .then((response) => {
-          if (response.ok) {
-            console.log("Query sent to server");
-            return response.text();
-          } else {
-            console.error("Error sending query to server");
-          }
-        })
-        .then((toSend) => {
-          //From JS to HTML
-          tupleTotal_.innerHTML = tupleTotal;
-        })
-        .catch((error) =>
-          console.error("Error sending query to server", error)
-        );
     </script>
     <div id="esri-map-container"></div>
   </body>

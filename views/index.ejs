@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <h1>Yo</h1>
-    <h2 id="curData"></h2>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta
       name="viewport"
@@ -16,11 +14,38 @@
     <style>
       html,
       body,
-      #esri-map-container {
+      #map-container {
         padding: 0px;
         margin: 0px;
-        height: 90%;
-        width: 90%;
+        height: 100%;
+        width: 100%;
+        position: relative;
+      }
+
+      #map {
+        height: 100%;
+        width: 100%;
+      }
+      h2 {
+        color: rgb(255, 255, 255);
+        font-size: 32px;
+        font-family: Arial, sans-serif;
+      }
+
+      #input-container {
+        position: absolute;
+        top: 30px;
+        left: 55px;
+        z-index: 1;
+        background-color: rgb(0, 0, 0);
+        padding: 10px;
+        opacity: 0.7;
+        border-radius: 5px;
+        box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
+      }
+
+      #calculate-route-btn {
+        margin-top: 10px;
       }
 
       .esriSimpleMarkerSymbol path {
@@ -28,9 +53,17 @@
         stroke: #000000;
         stroke-width: 0.5px;
       }
+      label[for="startLocation"],
+      label[for="endLocation"],
+      label[for="option1"],
+      label[for="option2"] {
+        color: white;
+      }
     </style>
     <script src="https://js.arcgis.com/3.43/"></script>
     <script>
+      var map, openStreetMapLayer;
+
       require([
         "esri/map",
         "esri/layers/OpenStreetMapLayer",
@@ -39,11 +72,9 @@
         "esri/graphic",
         "dojo/domReady!"
       ], function(Map, OpenStreetMapLayer, Point, SimpleMarkerSymbol, Graphic) {
-        var map, openStreetMapLayer;
-
-        map = new Map("esri-map-container", {
-          center: [-82.3522,29.6424],
-          zoom: 12,
+        map = new Map("map", {
+          center: [-82.3522, 29.6424],
+          zoom: 12
         });
         openStreetMapLayer = new OpenStreetMapLayer();
         map.addLayer(openStreetMapLayer);
@@ -59,62 +90,40 @@
         map.on("click", function(evt) {
           // Set the graphic's geometry to the clicked point
           graphic.setGeometry(new Point(evt.mapPoint));
-          
+
           // Set the graphic's symbol to the marker symbol
           graphic.setSymbol(markerSymbol);
-          
+
           // Add the graphic to the map
           map.graphics.add(graphic);
         });
-        // Add any other code you want to run when the page loads here
       });
+
+      function calculateRoute() {
+        var startLocation = document.getElementById("startLocation").value;
+        var endLocation = document.getElementById("endLocation").value;
+        console.log("Start location:", startLocation);
+        console.log("End location:", endLocation);
+      }
     </script>
   </head>
 
   <body>
-    <script>
-      curData_ = document.getElementById("curData");
-      fetch("https://api.openstreetmap.org/api/0.6/node/8013981115", {
-        headers: {
-          Accept: "application/xml",
-          "Content-Type": "application/json",
-        },
-      })
-        .then((response) => response.text())
-        .then((xmlString) => {
-          const options = { ignoreComment: true, alwaysChildren: true };
-          const result = xmljs.xml2js(xmlString, options);
-          console.log(result);
-          curData_.innerHTML = JSON.stringify(result);
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-
-      var query1 = 10;
-      fetch("/total", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ query: query1 }), //From HTML to JS
-      })
-        .then((response) => {
-          if (response.ok) {
-            console.log("Query sent to server");
-            return response.text();
-          } else {
-            console.error("Error sending query to server");
-          }
-        })
-        .then((toSend) => {
-          //From JS to HTML
-          tupleTotal_.innerHTML = tupleTotal;
-        })
-        .catch((error) =>
-          console.error("Error sending query to server", error)
-        );
-    </script>
-    <div id="esri-map-container"></div>
+    <div id="map-container">
+      <div id="map"></div>
+      <div id="input-container">
+        <h2>NaviGator</h2>
+        <label for="startLocation"> Starting Location:</label>
+        <input type="text" id="startLocation" name="startLocation">
+        <br>
+        <label for="endLocation"> Ending Location:</label>
+        <input type="text" id="endLocation" name="endLocation">
+        <br>
+        <input type="checkbox" id="option1" name="option1" value="option1">
+        <label for="option1">Dijkstra's</label><br>
+        <input type="checkbox" id="option2" name="option2" value="option2">
+        <label for="option2">Breadth-First Search</label><br>
+        <button id="calculate-route-btn" onclick="calculateRoute()">Calculate Route</button>
+      </div>
+    </div>
   </body>
-</html>

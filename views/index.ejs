@@ -6,56 +6,12 @@
       name="viewport"
       content="initial-scale=1, maximum-scale=1,user-scalable=no"
     />
-    <title>Project 3</title>
+    <title>NaviGator</title>
     <link
       rel="stylesheet"
       href="https://js.arcgis.com/3.43/esri/css/esri.css"
     />
-    <style>
-      html,
-      body,
-      #map-container {
-        padding: 0px;
-        margin: 0px;
-        height: 100%;
-        width: 100%;
-        position: relative;
-      }
-      #map {
-        height: 100%;
-        width: 100%;
-      }
-      h2 {
-        color: rgb(255, 255, 255);
-        font-size: 32px;
-        font-family: Arial, sans-serif;
-      }
-      #input-container {
-        position: absolute;
-        top: 30px;
-        left: 55px;
-        z-index: 1;
-        background-color: rgb(0, 0, 0);
-        padding: 10px;
-        opacity: 0.7;
-        border-radius: 5px;
-        box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
-      }
-      #calculate-route-btn {
-        margin-top: 10px;
-      }
-      .esriSimpleMarkerSymbol path {
-        fill: rgb(0, 255, 255);
-        stroke: #000000;
-        stroke-width: 0.5px;
-      }
-      label[for="startLocation"],
-      label[for="endLocation"],
-      label[for="option1"],
-      label[for="option2"] {
-        color: white;
-      }
-    </style>
+    <link rel="stylesheet" type="text/css" href="style.css" />
     <script src="https://js.arcgis.com/3.43/"></script>
     <script>
       var map, openStreetMapLayer;
@@ -108,19 +64,21 @@
       <div id="map"></div>
       <div id="input-container">
         <h2>NaviGator</h2>
-        <label for="startLocation"> Starting Location:</label>
-        <input type="text" id="startLocation" name="startLocation" />
-        <br />
-        <label for="endLocation"> Ending Location:</label>
-        <input type="text" id="endLocation" name="endLocation" />
-        <br />
-        <input type="checkbox" id="option1" name="option1" value="option1" />
-        <label for="option1">Dijkstra's</label><br />
-        <input type="checkbox" id="option2" name="option2" value="option2" />
-        <label for="option2">Breadth-First Search</label><br />
-        <button id="calculate-route-btn" onclick="calculateRoute()">
-          Calculate Route
-        </button>
+        <section id="mainText">
+          <label for="startLocation"> Starting Point:</label>
+          <input type="text" id="startLocation" name="startLocation" />
+          <br />
+          <label for="endLocation">Destination:</label>
+          <input type="text" id="endLocation" name="endLocation" />
+          <br />
+          <input type="checkbox" id="option1" name="option1" value="option1" />
+          <label for="option1">Dijkstra's</label><br />
+          <input type="checkbox" id="option2" name="option2" value="option2" />
+          <label for="option2">Breadth-First Search</label><br />
+          <button id="calculate-route-btn" onclick="calculateRoute()">
+            Calculate Route
+          </button>
+        </section>
       </div>
     </div>
   </body>

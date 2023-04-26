@@ -8,6 +8,10 @@ body,
     position: relative;
 }
 
+#map_zoom_slider {
+    top: 20px;
+    left: 20px;
+}
 
 #map {
     height: 100%;
@@ -17,8 +21,8 @@ body,
 h2 {
     text-align: center;
     color: rgb(255, 255, 255);
-    font-size: 75px;
-    font-family: Arial, sans-serif;
+    font-size: 60px;
+    font-family: Verdana;
 }
 
 #input-container {
@@ -35,7 +39,6 @@ h2 {
     min-width: fit-content;
     height: 90%;
     min-height: fit-content;
-
 }
 
 #mainText
@@ -46,6 +49,11 @@ h2 {
 }
 
 #startLocation
+{
+    border-radius: 7px;
+}
+
+#endLocation
 {
     border-radius: 7px;
 }

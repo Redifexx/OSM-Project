@@ -1,6 +1,6 @@
 import express from 'express';
 import bodyParser from 'body-parser';
-import { hello } from './test.js';
+import { hello } from './algorithms.js';
 
 var PORT = process.env.PORT || 3000;
 

@@ -1,12 +1,68 @@
-h1 {
-    text-align: center;
-    font-family: Verdana;
-}
-
-#esri-map-container {
+html,
+body,
+#map-container {
     padding: 0px;
-    margin: auto;
+    margin: 0px;
     height: 100%;
     width: 100%;
+    position: relative;
+}
 
-  }
+
+#map {
+    height: 100%;
+    width: 100%;
+}
+
+h2 {
+    text-align: center;
+    color: rgb(255, 255, 255);
+    font-size: 75px;
+    font-family: Arial, sans-serif;
+}
+
+#input-container {
+    position: absolute;
+    top: 30px;
+    left: 55px;
+    z-index: 1;
+    background-color: rgb(0, 0, 0);
+    padding: 10px;
+    opacity: 0.7;
+    border-radius: 20px;
+    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
+    width: 30%;
+    min-width: fit-content;
+    height: 90%;
+    min-height: fit-content;
+
+}
+
+#mainText
+{
+    font-family: Verdana;
+    font-size: 25px;
+    margin-left: 10%;
+}
+
+#startLocation
+{
+    border-radius: 7px;
+}
+
+
+#calculate-route-btn {
+    margin-top: 10px;
+}
+
+.esriSimpleMarkerSymbol path {
+    fill: rgb(0, 255, 255);
+    stroke: #000000;
+    stroke-width: 0.5px;
+    }
+    label[for="startLocation"],
+    label[for="endLocation"],
+    label[for="option1"],
+    label[for="option2"] {
+    color: white;
+}

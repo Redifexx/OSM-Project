@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <h1 id="header">NaviGator</h1>
-    <h2 id="curData"></h2>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta
       name="viewport"
@@ -13,72 +11,117 @@
       rel="stylesheet"
       href="https://js.arcgis.com/3.43/esri/css/esri.css"
     />
-    <link rel="stylesheet" type="text/css" href="style.css" />
+    <style>
+      html,
+      body,
+      #map-container {
+        padding: 0px;
+        margin: 0px;
+        height: 100%;
+        width: 100%;
+        position: relative;
+      }
+      #map {
+        height: 100%;
+        width: 100%;
+      }
+      h2 {
+        color: rgb(255, 255, 255);
+        font-size: 32px;
+        font-family: Arial, sans-serif;
+      }
+      #input-container {
+        position: absolute;
+        top: 30px;
+        left: 55px;
+        z-index: 1;
+        background-color: rgb(0, 0, 0);
+        padding: 10px;
+        opacity: 0.7;
+        border-radius: 5px;
+        box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
+      }
+      #calculate-route-btn {
+        margin-top: 10px;
+      }
+      .esriSimpleMarkerSymbol path {
+        fill: rgb(0, 255, 255);
+        stroke: #000000;
+        stroke-width: 0.5px;
+      }
+      label[for="startLocation"],
+      label[for="endLocation"],
+      label[for="option1"],
+      label[for="option2"] {
+        color: white;
+      }
+    </style>
     <script src="https://js.arcgis.com/3.43/"></script>
     <script>
+      var map, openStreetMapLayer;
       require([
         "esri/map",
         "esri/layers/OpenStreetMapLayer",
+        "esri/geometry/Point",
+        "esri/symbols/SimpleMarkerSymbol",
+        "esri/graphic",
         "dojo/domReady!",
-      ], function (Map, OpenStreetMapLayer) {
-        var map, openStreetMapLayer;
-
-        map = new Map("esri-map-container", {
-          center: [-82.3477896, 29.6464527],
+      ], function (
+        Map,
+        OpenStreetMapLayer,
+        Point,
+        SimpleMarkerSymbol,
+        Graphic
+      ) {
+        map = new Map("map", {
+          center: [-82.3522, 29.6424],
           zoom: 12,
         });
         openStreetMapLayer = new OpenStreetMapLayer();
         map.addLayer(openStreetMapLayer);
+        // Create a symbol for the marker
+        var markerSymbol = new SimpleMarkerSymbol();
+        markerSymbol.setColor("#FF0000"); // Red
+        // Create a graphic object to hold the marker
+        var graphic = new Graphic();
+        // Add an event listener to the map for user clicks
+        map.on("click", function (evt) {
+          // Set the graphic's geometry to the clicked point
+          graphic.setGeometry(new Point(evt.mapPoint));
+          // Set the graphic's symbol to the marker symbol
+          graphic.setSymbol(markerSymbol);
+          // Add the graphic to the map
+          map.graphics.add(graphic);
+        });
       });
+      function calculateRoute() {
+        var startLocation = document.getElementById("startLocation").value;
+        var endLocation = document.getElementById("endLocation").value;
+        console.log("Start location:", startLocation);
+        console.log("End location:", endLocation);
+      }
     </script>
   </head>
 
   <body>
-    <script>
-      curData_ = document.getElementById("curData");
-      var data;
-      var parser = new DOMParser();
-      var xmlDoc;
-      fetch("https://api.openstreetmap.org/api/0.6/node/8013981115", {
-        headers: {
-          Accept: "application/xml",
-          "Content-Type": "application/json",
-        },
-      })
-        .then((response) => response.text())
-        .then((result) => {
-          //console.log(result);
-          xmlDoc = parser.parseFromString(result, "text/xml");
-          const curNode = xmlDoc.getElementsByTagName("node")[0];
-          const curLat = curNode.getAttribute("lat");
-          console.log(curLat);
-          const curLon = curNode.getAttribute("lon");
-          console.log(curLon);
-          const curTags = curNode.getElementsByTagName("tag");
-          const curCity = curTags[0].getAttribute("v");
-          console.log(curCity);
-          const curHouseNum = curTags[1].getAttribute("v");
-          console.log(curHouseNum);
-          const curPostCode = curTags[2].getAttribute("v");
-          console.log(curPostCode);
-          const curState = curTags[3].getAttribute("v");
-          console.log(curState);
-          const curStreet = curTags[4].getAttribute("v");
-          console.log(curStreet);
-          const curName = curTags[5].getAttribute("v");
-          console.log(curName);
-          const curPhone = curTags[6].getAttribute("v");
-          console.log(curPhone);
-          const curShop = curTags[7].getAttribute("v");
-          console.log(curShop);
-          console.log(xmlDoc.getElementsByTagName("node")[0]);
-          curData_.innerHTML = JSON.stringify(typeof result);
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-      console.log(xmlDoc.getElementsByTagName("node")[0]);
-    </script>
-    <div id="esri-map-container"></div>
+    <div id="map-container">
+      <div id="map"></div>
+      <div id="input-container">
+        <h2>NaviGator</h2>
+        <label for="startLocation"> Starting Location:</label>
+        <input type="text" id="startLocation" name="startLocation" />
+        <br />
+        <label for="endLocation"> Ending Location:</label>
+        <input type="text" id="endLocation" name="endLocation" />
+        <br />
+        <input type="checkbox" id="option1" name="option1" value="option1" />
+        <label for="option1">Dijkstra's</label><br />
+        <input type="checkbox" id="option2" name="option2" value="option2" />
+        <label for="option2">Breadth-First Search</label><br />
+        <button id="calculate-route-btn" onclick="calculateRoute()">
+          Calculate Route
+        </button>
+      </div>
+    </div>
   </body>
 </html>

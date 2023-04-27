@@ -1,13 +1,11 @@
 const hello = 'hello!';
-//Retrieve all nodeIDs from Database and store in set
-//Create tables
-//Run chosen 
-
 const osmFetchNode = "https://api.openstreetmap.org/api/0.6/node/";
 var nodes = {
     source: null,
     destintation: null
 };
+const nodeSet = new Set();
+
 function fetchNode(source, destination)
 {
     nodes.source = source;
@@ -24,7 +22,9 @@ function fetchNode(source, destination)
       .catch((error) => {
         console.error(error);
       });
+    
 }
+
 console.log("ALGO START: " + nodes.source);
 console.log("ALGO END: " + nodes.destination);
 
@@ -43,5 +43,12 @@ function fetchWay(id)
         console.error(error);
       });
 }
+
+
+function loadNodes(nodeSet)
+{
+    
+}
+
 
 export { hello, fetchNode, fetchWay };

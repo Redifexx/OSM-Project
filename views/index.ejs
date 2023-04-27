@@ -131,11 +131,43 @@
         var markerSymbol = new SimpleMarkerSymbol();
         markerSymbol.setColor("#FF0000"); // Red
         var graphic = new Graphic();
+
+
         map.on("click", function (evt) {
           graphic.setGeometry(new Point(evt.mapPoint));
           graphic.setSymbol(markerSymbol);
-
           map.graphics.add(graphic);
+          var latB = evt.mapPoint.getLatitude();
+          var lonB = evt.mapPoint.getLongitude();
+          let lat = latB.toFixed(7);
+          let lon = lonB.toFixed(7);
+          console.log("Lat: " + lat + ", Long: " + lon);
+          var query = "SELECT id FROM GPEREZCOLON.UFDATA WHERE lat = \'";
+          query += lat;
+          query += "\' AND lon = \'";
+          query += lon;
+          query += "\'";
+          console.log(query);
+          fetch('/query1', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({query: query})
+          })
+          .then(response => {
+          if (response.ok) {
+              console.log('Query sent to server');
+              return response.text();
+          } else {
+              console.error('Error sending query to server 1');
+          }
+          })
+          .then (data => {
+              console.log(data); //Do something with node data
+              var node = data;
+          })
+          .catch(error => console.error('Error sending query to server 2', error));
         });
       });
 

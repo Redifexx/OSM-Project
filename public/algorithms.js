@@ -1,3 +1,5 @@
+import { loadSetS } from "./server.js";
+
 const hello = 'hello!';
 const osmFetchNode = "https://api.openstreetmap.org/api/0.6/node/";
 var nodes = {
@@ -17,13 +19,18 @@ function fetchNode(source, destination)
       .then((response) => response.text())
       .then((result) => {
         console.log("ALGO: " + result);
-        return result;
+        console.log("algo checkpoint");
+        return loadSetS(nodeSet)
+        .then(nodeSet => {
+            dAlgo(nodeSet);
+            return result;
+        });
       })
       .catch((error) => {
         console.error(error);
-      });
-    
+    });
 }
+
 
 console.log("ALGO START: " + nodes.source);
 console.log("ALGO END: " + nodes.destination);
@@ -45,9 +52,12 @@ function fetchWay(id)
 }
 
 
-function loadNodes(nodeSet)
+function dAlgo(nodeSet)
 {
-    
+    console.log("DALGO START"); 
+    nodeSet.forEach(function(value) {
+        console.log("DALGO: " + value);
+        });
 }
 
 

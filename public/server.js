@@ -2,7 +2,7 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import oracledb from 'oracledb';
 import { username, pw } from './logininfo.js';
-import * as algo from './algorithms.js';
+import { hello, fetchNode, fetchWay } from './algorithms.js';
 
 var PORT = process.env.PORT || 3000;
 
@@ -73,7 +73,7 @@ app.post('/query1', (req, res) => {
 
 app.post('/source', (req, res) => {
     const id = req.body.id;
-    var result = algo.fetchNode(id);
+    var result = fetchNode(id);
     res.status(200).send(result);
   });
 
@@ -83,7 +83,7 @@ app.post('/test', (req, res) => {
     res.send(toSend) //JS TO HTML
 });
 
-console.log(algo.hello);
+console.log(hello);
 
 app.use(express.static('public'));
 app.use('/', router);

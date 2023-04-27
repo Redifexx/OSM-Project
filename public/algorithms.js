@@ -6,14 +6,13 @@ const hello = 'hello!';
 const osmFetchNode = "https://api.openstreetmap.org/api/0.6/node/";
 function fetchNode(id)
 {
-    fetch(osmFetchNode + id, {
+    return fetch(osmFetchNode + id, {
         headers: {
           Accept: "application/xml",
       }})
       .then((response) => response.text())
       .then((result) => {
         console.log(result);
-        return result;
       })
       .catch((error) => {
         console.error(error);
@@ -24,7 +23,7 @@ function fetchNode(id)
 const osmFetchWay = "https://api.openstreetmap.org/api/0.6/way/";
 function fetchWay(id)
 {
-    fetch(osmFetchWay + id, {
+    return fetch(osmFetchWay + id, {
         headers: {
           Accept: "application/xml",
       }})
@@ -37,4 +36,4 @@ function fetchWay(id)
       });
 }
 
-export * from './algorithms.js';
+export { hello, fetchNode, fetchWay };

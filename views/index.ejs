@@ -32,12 +32,81 @@
           <input type="checkbox" id="option2" name="option2" value="option2" />
           <label for="option2">Breadth-First Search</label><br />
           <button id="calculate-route-btn" onclick="calculateRoute()"> Calculate Route </button>
+          <script>
+            //This is a test query to get different data from the database
+            //GPEREZCOLON.UFDATA contains id, lat, lon for each node, use GPT to build an oracle sql to get this data -> SELECT id, lat, lon FROM GPEREZCOLON.UFDATA;
+            //GPEREZCOLON.UFWAYS contains way_id, start_node_id, end_node_id for each way, the query might return NULL for a node id if the way extends beyond the database (i.e. 2nd ave is long)
+            //You can use the lat and lon to assign weights to edges, the node ids of the ways are the connected nodes
+            //Use the id for nodes to request more data about it using the OPENSTREETMAPS api
+            var query1 = 'SELECT COUNT(*) FROM GPEREZCOLON.UFDATA';
+            fetch('/query1', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({query: query1})
+            })
+            .then(response => {
+            if (response.ok) {
+                console.log('Query sent to server');
+                return response.text();
+            } else {
+                console.error('Error sending query to server');
+            }
+            })
+            .then (data => {
+                console.log(data); //Do something with node data
+            })
+            .catch(error => console.error('Error sending query to server', error)); 
+
+
+            function calculateRoute()
+            {
+              const sourceLoc = document.getElementById('startLocation');
+              const sourceVal = sourceLoc.value;
+              const destLoc = document.getElementById('endLocation');
+              const destVal = sourceLoc.value;
+
+              const nodes =
+              {
+                source: sourceVal,
+                destination: destVal
+              }
+
+              console.log("StartID " + nodes.source);
+              console.log("DestID " + nodes.destination);
+
+              sourceNode(nodes.source);
+            }
+
+            function sourceNode(id)
+            {
+              fetch('/source', {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({id: id})
+              })
+              .then(response => {
+              if (response.ok) {
+                  console.log('Query sent to server');
+                  return response.text();
+              } else {
+                  console.error('Error sending query to server');
+              }
+              })
+              .then (data => {
+                  console.log("EJS RESULT: " + data);
+              })
+              .catch(error => console.error('Error sending query to server', error)); 
+            }
+          </script>
         </section>
       </div>
     </div>
     <script src="https://js.arcgis.com/3.43/"></script>
     <script type="module">
-      import * as algo from "./algorithms.js";
       var map, openStreetMapLayer;
       require([
         "esri/map",
@@ -84,77 +153,6 @@
           menuToggle.innerText = "Hide menu";
         }
       });
-
-
-      //This is a test query to get different data from the database
-      //GPEREZCOLON.UFDATA contains id, lat, lon for each node, use GPT to build an oracle sql to get this data -> SELECT id, lat, lon FROM GPEREZCOLON.UFDATA;
-      //GPEREZCOLON.UFWAYS contains way_id, start_node_id, end_node_id for each way, the query might return NULL for a node id if the way extends beyond the database (i.e. 2nd ave is long)
-      //You can use the lat and lon to assign weights to edges, the node ids of the ways are the connected nodes
-      //Use the id for nodes to request more data about it using the OPENSTREETMAPS api
-      var query1 = 'SELECT COUNT(*) FROM GPEREZCOLON.UFDATA';
-      fetch('/query1', {
-      method: 'POST',
-      headers: {
-          'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({query: query1})
-      })
-      .then(response => {
-      if (response.ok) {
-          console.log('Query sent to server');
-          return response.text();
-      } else {
-          console.error('Error sending query to server');
-      }
-      })
-      .then (data => {
-          console.log(data); //Do something with node data
-      })
-      .catch(error => console.error('Error sending query to server', error)); 
-
-
-      function calculateRoute()
-      {
-        const sourceLoc = document.getElementById('startLocation');
-        const sourceVal = sourceLoc.value;
-        const destLoc = document.getElementById('endLocation');
-        const destVal = sourceLoc.value;
-
-        const nodes =
-        {
-          source: sourceVal,
-          destination: destVal
-        }
-
-        console.log("StartID " + nodes.source);
-        console.log("DestID " + nodes.destination);
-
-        sourceNode(nodes.source);
-      }
-
-      function sourceNode(id)
-      {
-        fetch('/source', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({id: id})
-        })
-        .then(response => {
-        if (response.ok) {
-            console.log('Query sent to server');
-            return response.text();
-        } else {
-            console.error('Error sending query to server');
-        }
-        })
-        .then (data => {
-            console.log("EJS RESULT: " + data);
-        })
-        .catch(error => console.error('Error sending query to server', error)); 
-      }
-
     </script>
   </head>
 

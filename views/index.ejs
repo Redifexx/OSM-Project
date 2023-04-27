@@ -89,9 +89,81 @@
       });
 
 
+      //This is a test query to get different data from the database
+      //GPEREZCOLON.UFDATA contains id, lat, lon for each node, use GPT to build an oracle sql to get this data -> SELECT id, lat, lon FROM GPEREZCOLON.UFDATA;
+      //GPEREZCOLON.UFWAYS contains way_id, start_node_id, end_node_id for each way, the query might return NULL for a node id if the way extends beyond the database (i.e. 2nd ave is long)
+      //You can use the lat and lon to assign weights to edges, the node ids of the ways are the connected nodes
+      //Use the id for nodes to request more data about it using the OPENSTREETMAPS api
+      var query1 = 'SELECT COUNT(*) FROM GPEREZCOLON.UFDATA';
+      fetch('/query1', {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({query: query1})
+      })
+      .then(response => {
+      if (response.ok) {
+          console.log('Query sent to server');
+          return response.text();
+      } else {
+          console.error('Error sending query to server');
+      }
+      })
+      .then (data => {
+          console.log(data); //Do something with node data
+      })
+      .catch(error => console.error('Error sending query to server', error)); 
 
 
-      
+
+      //curData_ = document.getElementById("curData");
+      var id = "8013981115"; //Get this from the database
+      const osmFetch = "https://api.openstreetmap.org/api/0.6/node/";
+
+      var data;
+      var parser = new DOMParser();
+      var xmlDoc;
+
+      //Fetches node data
+        fetch(osmFetch + id, {
+          headers: {
+            Accept: "application/xml",
+        }})
+        .then((response) => response.text())
+        .then((result) => {
+          console.log(result);
+          
+          xmlDoc = parser.parseFromString(result, "text/xml");
+          const curNode = xmlDoc.getElementsByTagName("node")[0];
+          const curLat = curNode.getAttribute("lat");
+          console.log(curLat);
+          const curLon = curNode.getAttribute("lon");
+          console.log(curLon);
+          const curTags = curNode.getElementsByTagName("tag");
+          const curCity = curTags[0].getAttribute("v");
+          console.log(curCity);
+          const curHouseNum = curTags[1].getAttribute("v");
+          console.log(curHouseNum);
+          const curPostCode = curTags[2].getAttribute("v");
+          console.log(curPostCode);
+          const curState = curTags[3].getAttribute("v");
+          console.log(curState);
+          const curStreet = curTags[4].getAttribute("v");
+          console.log(curStreet);
+          const curName = curTags[5].getAttribute("v");
+          console.log(curName);
+          const curPhone = curTags[6].getAttribute("v");
+          console.log(curPhone);
+          const curShop = curTags[7].getAttribute("v");
+          console.log(curShop);
+          console.log(xmlDoc.getElementsByTagName("node")[0]);
+          //curData_.innerHTML = JSON.stringify(typeof result);
+          
+        })
+        .catch((error) => {
+          console.error(error);
+        });
     </script>
   </head>
 

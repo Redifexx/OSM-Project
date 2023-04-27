@@ -72,9 +72,16 @@ app.post('/query1', (req, res) => {
 
 
 app.post('/source', (req, res) => {
-    const id = req.body.id;
-    var result = fetchNode(id);
-    res.status(200).send(result);
+    const source = req.body.source;
+    const destination = req.body.destination;
+    var result = fetchNode(source, destination)
+        .then(result_ => {
+            console.log("SERVER: " + result_);
+            res.status(200).send(result_);
+        })
+        .catch((error) => {
+            console.error(error);
+        });
   });
 
 var toSend = 'send';

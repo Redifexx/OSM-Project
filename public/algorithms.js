@@ -4,21 +4,29 @@ const hello = 'hello!';
 //Run chosen 
 
 const osmFetchNode = "https://api.openstreetmap.org/api/0.6/node/";
-function fetchNode(id)
+var nodes = {
+    source: null,
+    destintation: null
+};
+function fetchNode(source, destination)
 {
-    return fetch(osmFetchNode + id, {
+    nodes.source = source;
+    nodes.destintation = destination;
+    return fetch(osmFetchNode + source, {
         headers: {
           Accept: "application/xml",
       }})
       .then((response) => response.text())
       .then((result) => {
-        console.log(result);
+        console.log("ALGO: " + result);
+        return result;
       })
       .catch((error) => {
         console.error(error);
       });
-
 }
+console.log("ALGO START: " + nodes.source);
+console.log("ALGO END: " + nodes.destination);
 
 const osmFetchWay = "https://api.openstreetmap.org/api/0.6/way/";
 function fetchWay(id)

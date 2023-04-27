@@ -76,17 +76,17 @@
               console.log("StartID " + nodes.source);
               console.log("DestID " + nodes.destination);
 
-              sourceNode(nodes.source);
+              sourceNode(nodes.source, nodes.destination);
             }
 
-            function sourceNode(id)
+            function sourceNode(source, destination)
             {
               fetch('/source', {
               method: 'POST',
               headers: {
                   'Content-Type': 'application/json'
               },
-              body: JSON.stringify({id: id})
+              body: JSON.stringify({source: source, destination: destination})
               })
               .then(response => {
               if (response.ok) {

@@ -12,6 +12,7 @@
       href="https://js.arcgis.com/3.43/esri/css/esri.css"
     />
     <link rel="stylesheet" type="text/css" href="style.css" />
+    <script src="./algorithms.js" type="module"></script>
   </head>
   <body>
     <div id="map-container">
@@ -35,7 +36,8 @@
       </div>
     </div>
     <script src="https://js.arcgis.com/3.43/"></script>
-    <script>
+    <script type="module">
+      import * as algo from "./algorithms.js";
       var map, openStreetMapLayer;
       require([
         "esri/map",
@@ -57,18 +59,13 @@
         });
         openStreetMapLayer = new OpenStreetMapLayer();
         map.addLayer(openStreetMapLayer);
-        // Create a symbol for the marker
         var markerSymbol = new SimpleMarkerSymbol();
         markerSymbol.setColor("#FF0000"); // Red
-        // Create a graphic object to hold the marker
         var graphic = new Graphic();
-        // Add an event listener to the map for user clicks
         map.on("click", function (evt) {
-          // Set the graphic's geometry to the clicked point
           graphic.setGeometry(new Point(evt.mapPoint));
-          // Set the graphic's symbol to the marker symbol
           graphic.setSymbol(markerSymbol);
-          // Add the graphic to the map
+
           map.graphics.add(graphic);
         });
       });
@@ -116,54 +113,48 @@
       .catch(error => console.error('Error sending query to server', error)); 
 
 
+      function calculateRoute()
+      {
+        const sourceLoc = document.getElementById('startLocation');
+        const sourceVal = sourceLoc.value;
+        const destLoc = document.getElementById('endLocation');
+        const destVal = sourceLoc.value;
 
-      //curData_ = document.getElementById("curData");
-      var id = "8013981115"; //Get this from the database
-      const osmFetch = "https://api.openstreetmap.org/api/0.6/node/";
+        const nodes =
+        {
+          source: sourceVal,
+          destination: destVal
+        }
 
-      var data;
-      var parser = new DOMParser();
-      var xmlDoc;
+        console.log("StartID " + nodes.source);
+        console.log("DestID " + nodes.destination);
 
-      //Fetches node data
-        fetch(osmFetch + id, {
-          headers: {
-            Accept: "application/xml",
-        }})
-        .then((response) => response.text())
-        .then((result) => {
-          console.log(result);
-          
-          xmlDoc = parser.parseFromString(result, "text/xml");
-          const curNode = xmlDoc.getElementsByTagName("node")[0];
-          const curLat = curNode.getAttribute("lat");
-          console.log(curLat);
-          const curLon = curNode.getAttribute("lon");
-          console.log(curLon);
-          const curTags = curNode.getElementsByTagName("tag");
-          const curCity = curTags[0].getAttribute("v");
-          console.log(curCity);
-          const curHouseNum = curTags[1].getAttribute("v");
-          console.log(curHouseNum);
-          const curPostCode = curTags[2].getAttribute("v");
-          console.log(curPostCode);
-          const curState = curTags[3].getAttribute("v");
-          console.log(curState);
-          const curStreet = curTags[4].getAttribute("v");
-          console.log(curStreet);
-          const curName = curTags[5].getAttribute("v");
-          console.log(curName);
-          const curPhone = curTags[6].getAttribute("v");
-          console.log(curPhone);
-          const curShop = curTags[7].getAttribute("v");
-          console.log(curShop);
-          console.log(xmlDoc.getElementsByTagName("node")[0]);
-          //curData_.innerHTML = JSON.stringify(typeof result);
-          
+        sourceNode(nodes.source);
+      }
+
+      function sourceNode(id)
+      {
+        fetch('/source', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({id: id})
         })
-        .catch((error) => {
-          console.error(error);
-        });
+        .then(response => {
+        if (response.ok) {
+            console.log('Query sent to server');
+            return response.text();
+        } else {
+            console.error('Error sending query to server');
+        }
+        })
+        .then (data => {
+            console.log("EJS RESULT: " + data);
+        })
+        .catch(error => console.error('Error sending query to server', error)); 
+      }
+
     </script>
   </head>
 

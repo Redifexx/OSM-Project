@@ -12,6 +12,28 @@
       href="https://js.arcgis.com/3.43/esri/css/esri.css"
     />
     <link rel="stylesheet" type="text/css" href="style.css" />
+  </head>
+  <body>
+    <div id="map-container">
+      <div id="map"></div>
+      <div id="input-container">
+        <div id="menu-toggle">Hide menu</div>
+        <h2>NaviGator</h2>
+        <section id="mainText">
+          <label for="startLocation"> Starting Point:</label>
+          <input type="text" id="startLocation" name="startLocation" />
+          <br />
+          <label for="endLocation">Destination:</label>
+          <input type="text" id="endLocation" name="endLocation" />
+          <br />
+          <input type="checkbox" id="option1" name="option1" value="option1" />
+          <label for="option1">Dijkstra's</label><br />
+          <input type="checkbox" id="option2" name="option2" value="option2" />
+          <label for="option2">Breadth-First Search</label><br />
+          <button id="calculate-route-btn" onclick="calculateRoute()"> Calculate Route </button>
+        </section>
+      </div>
+    </div>
     <script src="https://js.arcgis.com/3.43/"></script>
     <script>
       var map, openStreetMapLayer;
@@ -50,36 +72,28 @@
           map.graphics.add(graphic);
         });
       });
-      function calculateRoute() {
-        var startLocation = document.getElementById("startLocation").value;
-        var endLocation = document.getElementById("endLocation").value;
-        console.log("Start location:", startLocation);
-        console.log("End location:", endLocation);
-      }
+
+      var isContainerVisible = true;
+      document.getElementById("menu-toggle").addEventListener("click", function() {
+        var inputContainer = document.getElementById("input-container");
+        var menuToggle = document.getElementById("menu-toggle");
+        if (isContainerVisible) {
+          inputContainer.style.left = "-500px";
+          isContainerVisible = false;
+          menuToggle.innerText = "Show menu";
+        } else {
+          inputContainer.style.left = "0px";
+          isContainerVisible = true;
+          menuToggle.innerText = "Hide menu";
+        }
+      });
+
+
+
+
+      
     </script>
   </head>
 
-  <body>
-    <div id="map-container">
-      <div id="map"></div>
-      <div id="input-container">
-        <h2>NaviGator</h2>
-        <section id="mainText">
-          <label for="startLocation"> Starting Point:</label>
-          <input type="text" id="startLocation" name="startLocation" />
-          <br />
-          <label for="endLocation">Destination:</label>
-          <input type="text" id="endLocation" name="endLocation" />
-          <br />
-          <input type="checkbox" id="option1" name="option1" value="option1" />
-          <label for="option1">Dijkstra's</label><br />
-          <input type="checkbox" id="option2" name="option2" value="option2" />
-          <label for="option2">Breadth-First Search</label><br />
-          <button id="calculate-route-btn" onclick="calculateRoute()">
-            Calculate Route
-          </button>
-        </section>
-      </div>
-    </div>
-  </body>
+  
 </html>

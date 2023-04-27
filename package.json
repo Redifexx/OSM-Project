@@ -15,7 +15,6 @@
     "express": "^4.18.2",
     "http-server": "^14.1.1",
     "node-fetch": "^3.3.1",
-    "oracledb": "^5.5.0",
     "xml-js": "^1.6.11",
     "xmljs": "^0.3.2"
   }

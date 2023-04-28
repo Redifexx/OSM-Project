@@ -90,21 +90,13 @@ app.post('/test', (req, res) => {
     res.send(toSend) //JS TO HTML
 });
 
-/*
-var query = "SELECT id FROM GPEREZCOLON.UFDATA WHERE lat = ";
-query += lat;
-query += " AND lon = ";
-query += lon;
-query += ";";
-*/
-
 //Gets all node ids into set
 function loadSetS(nodeSet)
 {
     return new Promise((res, rej) => {
-        console.log("server checkpoint");
+        //console.log("server checkpoint");
         const query = "SELECT DISTINCT id FROM GPEREZCOLON.UFDATA";
-        console.log('Query received from client:', query);
+        //console.log('Query received from client:', query);
         oracledb.getConnection(connectionProperties, function (err, con) {
             if (err) {
             console.error(err.message);
@@ -129,10 +121,33 @@ function loadSetS(nodeSet)
     });
 }
 
+function runQuery(query) {
+    return new Promise((res, rej) => {
+            //console.log('Query received from client:', query);
+            oracledb.getConnection(connectionProperties, function (err, con) {
+                if (err) {
+                console.error(err.message);
+                return;
+                }
+                con.execute(query,{},  
+                { outFormat: oracledb.OBJECT },
+                function (err, result) {
+                    if (err) {
+                        console.error("ERROR " + err.message);
+                        
+                        doRelease(con);
+                        return;
+                    }
+                    res(result);
+                });
+            });
+        });
+}
+
 console.log(hello);
 
 app.use(express.static('public'));
 app.use('/', router);
 app.listen(PORT);
 
-export { loadSetS };
+export { loadSetS, runQuery };

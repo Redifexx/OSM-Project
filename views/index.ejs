@@ -38,10 +38,11 @@
     </div>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js"></script>
+    
     <script type = module>
       // Import the readAirportsFromFile function
-      import fs from 'fs';
-      import readAirportsFromFile from './parsefile.js';
+      //import fs from 'fs';
+      //import readAirportsFromFile from './public/parsefile.js';
 
       // Define a route handler that calls the readAirportsFromFile function
 
@@ -58,15 +59,48 @@
         clickable: true
       }).addTo(map);
       var markerLayer = L.layerGroup().addTo(map);
+      
+      const customIcon = L.icon({
+        iconSize: [10, 10], // adjust the size of the marker here
+        popupAnchor: [0, -10] // adjust the popup anchor to position it correctly
+      });
 
-      const airports = readAirportsFromFile('./airports.dat.txt');
-      for (let i = 0; i < airports.names.length; i++) { 
-        const name = airports.names[i];
-        const latitude = airports.latitudes[i];
-        const longitude = airports.longitudes[i] ;
-        const marker = L.marker([latitude, longitude]).addTo(map);
-        marker.bindPopup(name);
-      }
+      fetch('/airports.dat.txt')
+        .then((response) => response.text())
+        .then((data) => {
+          const lines = data.trim().split("\n");
+          const names = [];
+          const longitudes = [];
+          const latitudes = [];
+
+          // Loop through each line and extract the airport name, longitude, and latitude
+          for (let i = 0; i < lines.length/2; i++) {
+            const fields = lines[i].split(",");
+
+            const name = fields[1].replace(/"/g, ""); // remove quotes from the name
+            const longitude = parseFloat(fields[6]);
+            const latitude = parseFloat(fields[7]);
+
+            // Log the results for each line
+            names.push(name);
+            longitudes.push(longitude);
+            latitudes.push(latitude);
+            if(!isNaN(longitude) && !isNaN(latitude)){
+              const marker = L.marker([longitude,latitude]).addTo(map);
+              marker.bindPopup(name);
+          }
+          
+          }
+        });
+        // Define the coordinates for the two markers
+        var startLatLng = L.latLng(30.2358,-81.680603);
+        var endLatLng = L.latLng(29.6900997162,-82.2717971802);
+
+        // Create an array of LatLng points for the polyline
+        var polylinePoints = [startLatLng, endLatLng];
+
+        // Create the polyline object and add it to the map
+        var polyline = L.polyline(polylinePoints, {color: 'red'}).addTo(map);
 
 
       map.on('click', function(e) {

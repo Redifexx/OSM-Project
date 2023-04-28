@@ -44,12 +44,6 @@
         maxZoom: 18,
       }).addTo(map);
       
-      // create a marker with clickable set to true
-      /*
-      var marker = L.marker([29.6413, -82.357], {
-        clickable: true
-      }).addTo(map);
-      */
       var markerLayer = L.layerGroup().addTo(map);
       
       const customIcon = L.icon({
@@ -199,12 +193,14 @@
               const d = R * c; // Distance in km
               return d;
             }
+
             function deg2rad(deg) {
               return deg * (Math.PI / 180);
             }
 
             if (bfsAlgo)
             {
+              console.log("BFS");
               var source = starLoc.value;
               var destination = endLoc.value;
               bfs(graph, source, destination);
@@ -219,7 +215,7 @@
                       return `${path.join(' -> ')} -> ${destination} (distance: ${distance.toFixed(2)} km)`;
                   }
                   visited.add(node);
-                  for (const neighbor of Array.from(graph[node])) {
+                  for (const neighbor of graph[node] ? Array.from(graph[node]) : []) {
                       if (!visited.has(neighbor.node)) {
                           const newPath = [...path, node];
                           queue.push({ node: neighbor.node, path: newPath, distance: distance + neighbor.distance });

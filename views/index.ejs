@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html>
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -26,10 +25,10 @@
           <label for="endLocation">Destination:</label>
           <input type="text" id="endLocation" name="endLocation" />
           <br />
-          <input type="checkbox" id="option1" name="option1" value="option1" />
-          <label for="option1">Dijkstra's</label><br />
           <input type="checkbox" id="option2" name="option2" value="option2" />
           <label for="option2">Breadth-First Search</label><br />
+          <input type="checkbox" id="option3" name="option3" value="option3" />
+          <label for="option3">Depth-First Search</label><br />
           <button id="calculate-route-btn" onclick="calculateRoute()"> Calculate Route </button>
         </section>
       </div>
@@ -37,7 +36,7 @@
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js"></script>
     
-    <script type = module>
+    <script>
       var map = L.map("map").setView([29.6413, -82.357], 13);
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         attribution:
@@ -140,27 +139,124 @@
 
       function calculateRoute()
       {
-        const mapData = new Map();
-        const dijkstraData = new Map();
-        fetch('/airports.dat.txt')
-        .then((response) => response.text())
-        .then((data) => {
-          const lines = data.trim().split("\n");
-          const markers = [];
-
-          // Loop through each line and extract the airport name, longitude, and latitude
-          for (let i = 0; i < lines.length/2; i++) {
-            const fields = lines[i].split(",");
-            const name = fields[1].replace(/"/g, ""); // remove quotes from the name
-            const longitude = parseFloat(fields[6]);
-            const latitude = parseFloat(fields[7]);
-            map.set(name, {lon: longitude, lat: latitude});
-          }
-          
+        console.log("Calculating");
+        var starLoc = document.getElementById("startLocation");
+        var endLoc = document.getElementById("endLocation");
+        var bfsAlgo = false;
+        var dfsAlgo = false;
+        const bfsCheck = document.getElementById('option2');
+        const dfsCheck = document.getElementById('option3');
 
 
-          }
-        });
+        if(bfsCheck.checked)
+        {
+          bfsAlgo = true;
+        }
+
+        if(dfsCheck.checked)
+        {
+          dfsAlgo = true;
+        }
+
+        if (dfsAlgo || bfsAlgo)
+        {
+          // Create a graph
+          const graph = {};
+          fetch('/airports.dat.txt')
+          .then((response) => response.text())
+          .then((data) => {
+            const lines = data.trim().split("\n");
+            const markers = [];
+
+            // Loop through each line and extract the airport name, longitude, and latitude
+            for (let i = 0; i < lines.length/2; i++) {
+              const line = lines[i].split(",");
+              const code1 = line[3];
+              const code2 = line[4];
+              if (code1 && code2) {
+                if (!graph[code1]) graph[code1] = [];
+                if (!graph[code2]) graph[code2] = [];
+                const distance = getDistance(line);
+                graph[code1].push({ node: code2, distance });
+                graph[code2].push({ node: code1, distance });
+              }
+              console.log("check");
+            }
+
+              // Get the distance between two airports based on their coordinates
+            function getDistance(line) {
+              const lat1 = parseFloat(line[6]);
+              const lon1 = parseFloat(line[7]);
+              const lat2 = parseFloat(line[10]);
+              const lon2 = parseFloat(line[11]);
+              const R = 6371; // Radius of the earth in km
+              const dLat = deg2rad(lat2 - lat1); // deg2rad below
+              const dLon = deg2rad(lon2 - lon1);
+              const a =
+                  Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                  Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+              const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+              const d = R * c; // Distance in km
+              return d;
+            }
+            function deg2rad(deg) {
+              return deg * (Math.PI / 180);
+            }
+
+            if (bfsAlgo)
+            {
+              var source = starLoc.value;
+              var destination = endLoc.value;
+              bfs(graph, source, destination);
+
+              // Breadth-first search algorithm
+              function bfs(graph, start, destination) {
+              const queue = [{ node: start, path: [], distance: 0 }];
+              const visited = new Set();
+              while (queue.length > 0) {
+                  const { node, path, distance } = queue.shift();
+                  if (node === destination) {
+                      return `${path.join(' -> ')} -> ${destination} (distance: ${distance.toFixed(2)} km)`;
+                  }
+                  visited.add(node);
+                  for (const neighbor of Array.from(graph[node])) {
+                      if (!visited.has(neighbor.node)) {
+                          const newPath = [...path, node];
+                          queue.push({ node: neighbor.node, path: newPath, distance: distance + neighbor.distance });
+                      }
+                  }
+              }
+              return 'No route found';
+              }
+            }
+
+            if (dfsAlgo)
+            {
+              var source = starLoc.value;
+              var destination = endLoc.value;
+              console.log(`Data: ${dfs(graph, source, destination)}`);
+              function dfs(graph, start, destination, visited = new Set(), path = [], distance = 0) {
+                visited.add(start);
+                path.push(start);
+                if (start === destination) {
+                    //return ${path.join(' -> ')} (distance: ${distance.toFixed(2)} km);
+                    return path.join(' -> ') + ' (distance: ' + distance.toFixed(2) + ' km)';
+
+                }
+                for (const neighbor of graph[start]) {
+                    if (!visited.has(neighbor.node)) {
+                        const result = dfs(graph, neighbor.node, destination, visited, path, distance + neighbor.distance);
+                        if (result) {
+                            return result;
+                        }
+                    }
+                }
+                path.pop();
+                return null;
+              }
+            }
+          });      
+        } 
       }
       
     </script>

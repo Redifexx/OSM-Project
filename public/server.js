@@ -96,4 +96,5 @@ app.use(express.static('public'));
 app.use('/', router);
 app.listen(PORT);
 
+export { fs, Papa, readline };
 

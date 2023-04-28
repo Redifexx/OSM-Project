@@ -65,33 +65,43 @@
         popupAnchor: [0, -10] // adjust the popup anchor to position it correctly
       });
 
+
       fetch('/airports.dat.txt')
         .then((response) => response.text())
         .then((data) => {
           const lines = data.trim().split("\n");
-          const names = [];
-          const longitudes = [];
-          const latitudes = [];
+          const markers = []; // store markers in an array
 
           // Loop through each line and extract the airport name, longitude, and latitude
           for (let i = 0; i < lines.length/2; i++) {
             const fields = lines[i].split(",");
-
             const name = fields[1].replace(/"/g, ""); // remove quotes from the name
             const longitude = parseFloat(fields[6]);
             const latitude = parseFloat(fields[7]);
 
-            // Log the results for each line
-            names.push(name);
-            longitudes.push(longitude);
-            latitudes.push(latitude);
+            // Create a marker object for each airport
             if(!isNaN(longitude) && !isNaN(latitude)){
-              const marker = L.marker([longitude,latitude]).addTo(map);
+              const marker = L.marker([longitude,latitude]);
               marker.bindPopup(name);
+              markers.push(marker);
+            }
           }
-          
-          }
+
+          // Add markers to map and only show when on screen
+          map.on('moveend', function() {
+            const bounds = map.getBounds();
+
+            markers.forEach(function(marker) {
+              const markerLatLng = marker.getLatLng();
+              if (bounds.contains(markerLatLng)) {
+                map.addLayer(marker);
+              } else {
+                map.removeLayer(marker);
+              }
+            });
+          });
         });
+
         // Define the coordinates for the two markers
         var startLatLng = L.latLng(30.2358,-81.680603);
         var endLatLng = L.latLng(29.6900997162,-82.2717971802);
